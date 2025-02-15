@@ -2,6 +2,27 @@ provider "aws" {
   region = "us-east-1"
 }
 
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "veriff-terraform-state-bucket"
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_versioning" "versioning" {
+  bucket = aws_s3_bucket.terraform_state.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+terraform {
+  backend "s3" {
+    bucket = "veriff-terraform-state-bucket"
+    key    = "terraform/state.tfstate"
+    region = "us-east-1"
+    encrypt = true
+  }
+}
+
 resource "aws_vpc" "eks_vpc" {
   cidr_block = "10.0.0.0/16"
 }
