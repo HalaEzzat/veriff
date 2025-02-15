@@ -1,0 +1,31 @@
+---
+- name: Build and Push Docker Image
+  hosts: localhost
+  connection: local
+  tasks:
+
+    - name: Ensure Docker is installed
+      command: docker --version
+      register: docker_check
+      ignore_errors: yes
+
+    - name: Install Docker if not present
+      shell: |
+        sudo apt update
+        sudo apt install -y docker.io
+      when: docker_check.rc != 0
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Log in to Docker Hub
+      command: docker login -u "{{ docker_user }}" -p "{{ docker_pass }}"
+
+    - name: Build Docker Image
+      command: docker build -t "{{ docker_user }}/my-app:latest" .
+
+    - name: Push Docker Image to Docker Hub
+      command: docker push "{{ docker_user }}/my-app:latest"
