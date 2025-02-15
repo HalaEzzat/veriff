@@ -2,11 +2,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
-
-
-resource "aws_s3_bucket_versioning" "enabled" {
+resource "aws_s3_bucket_versioning" "versioning" {
   bucket = "veriff-terraform-state-bucket"
-
   versioning_configuration {
     status = "Enabled"
   }
@@ -20,6 +17,7 @@ terraform {
     encrypt = true
   }
 }
+
 resource "aws_vpc" "eks_vpc" {
   cidr_block = "10.0.0.0/16"
 }
