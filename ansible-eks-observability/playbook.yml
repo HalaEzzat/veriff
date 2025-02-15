@@ -1,39 +1,34 @@
-- name: Configure EKS Cluster and Deploy Observability Stack
+- name: Setup Kubernetes Observability (LGTM)
   hosts: localhost
-  become: yes
   tasks:
-    - name: Install kubectl
-      apt:
-        name: kubectl
-        state: present
 
-    - name: Install helm
-      apt:
-        name: helm
-        state: present
-
-    - name: Configure kubectl for EKS
+    - name: Install Helm if not installed
       shell: |
-        aws eks --region us-east-1 update-kubeconfig --name veriff-observability-cluster
+        if ! command -v helm &> /dev/null; then
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        fi
 
-    - name: Add Helm repositories
-      shell: |
-        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-        helm repo add grafana https://grafana.github.io/helm-charts
-        helm repo update
+    - name: Add Grafana Helm repository
+      shell: helm repo add grafana https://grafana.github.io/helm-charts && helm repo update
 
-    - name: Deploy Prometheus + Grafana
-      shell: |
-        helm install prometheus prometheus-community/kube-prometheus-stack
+    - name: Create monitoring namespace
+      shell: kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+      
+    - name: Deploy Loki (Logging)
+      shell: >
+        helm upgrade --install loki grafana/loki-stack --namespace monitoring
+        --set loki.persistence.enabled=true
+        --set loki.persistence.size=10Gi
 
-    - name: Deploy Loki
-      shell: |
-        helm install loki grafana/loki
+    - name: Deploy Mimir (Metrics)
+      shell: >
+        helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring
 
-    - name: Deploy Tempo
-      shell: |
-        helm install tempo grafana/tempo
+    - name: Deploy Tempo (Tracing)
+      shell: >
+        helm upgrade --install tempo grafana/tempo --namespace monitoring
 
-    - name: Deploy Sample Application
-      shell: |
-        kubectl apply -f https://raw.githubusercontent.com/veriff/deployment.yaml
+    - name: Deploy Grafana
+      shell: >
+        helm upgrade --install grafana grafana/grafana --namespace monitoring 
+        --set adminPassword='admin123'
