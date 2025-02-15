@@ -17,7 +17,6 @@ terraform {
     encrypt = true
   }
 }
-
 # 🚀 VPC for EKS
 resource "aws_vpc" "eks_vpc" {
   cidr_block = "10.0.0.0/16"
@@ -39,7 +38,7 @@ resource "aws_subnet" "eks_subnet_2" {
   map_public_ip_on_launch = true
 }
 
-# 🔹 IAM Role for EKS
+# 🔹 IAM Role for EKS Control Plane
 resource "aws_iam_role" "eks_role" {
   name = "eks-cluster-role"
 
@@ -50,17 +49,14 @@ resource "aws_iam_role" "eks_role" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = [
-            "eks.amazonaws.com",
-            "ec2.amazonaws.com"
-          ]
+          Service = "eks.amazonaws.com"
         }
       }
     ]
   })
 }
 
-# 🌟 Attach Necessary Policies
+# 🌟 Attach Policies to EKS Control Plane Role
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_role.name
@@ -68,16 +64,6 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 
 resource "aws_iam_role_policy_attachment" "eks_service_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = aws_iam_role.eks_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "ec2_container_registry_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_role.name
 }
 
@@ -94,10 +80,44 @@ resource "aws_eks_cluster" "eks" {
   }
 }
 
-# 🚀 Node Group for EKS (Optimized for Fast Deployment)
+# ✅ IAM Role for Worker Nodes
+resource "aws_iam_role" "eks_node_role" {
+  name = "eks-node-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# 🌟 Attach Policies to Worker Node Role
+resource "aws_iam_role_policy_attachment" "worker_node_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_cni_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_ecr_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+# 🚀 EKS Node Group (Using Correct Role)
 resource "aws_eks_node_group" "eks_nodes" {
   cluster_name  = aws_eks_cluster.eks.name
-  node_role_arn = aws_iam_role.eks_role.arn
+  node_role_arn = aws_iam_role.eks_node_role.arn   # ✅ FIXED: Uses the correct IAM role
   subnet_ids    = [
     aws_subnet.eks_subnet_1.id,
     aws_subnet.eks_subnet_2.id
@@ -112,4 +132,10 @@ resource "aws_eks_node_group" "eks_nodes" {
     max_size     = 2
     min_size     = 1
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.worker_node_policy,
+    aws_iam_role_policy_attachment.worker_node_cni_policy,
+    aws_iam_role_policy_attachment.worker_node_ecr_policy
+  ]
 }
