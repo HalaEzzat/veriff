@@ -14,6 +14,12 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
+resource "null_resource" "create_s3" {
+  provisioner "local-exec" {
+    command = "aws s3api head-bucket --bucket veriff-terraform-state-bucket || aws s3api create-bucket --bucket veriff-terraform-state-bucket --region us-east-1"
+  }
+}
+
 terraform {
   backend "s3" {
     bucket = "veriff-terraform-state-bucket"
