@@ -28,6 +28,9 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        
+      - name: Set up kubectl for EKS
+        run: aws eks update-kubeconfig --region us-east-1 --name veriff-cluster
 
       - name: Install Ansible
         run: sudo apt install ansible
@@ -35,8 +38,3 @@ jobs:
       - name: Run Ansible Playbook
         run: ansible-playbook playbook.yml
 
-      - name: Port-forward Grafana service
-        run: |
-          kubectl port-forward service/prometheus-grafana 3000:80 > /dev/null 2>&1 &
-          sleep 10  # Wait for port-forward to start
-          curl http://localhost:3000  # Test Grafana access
