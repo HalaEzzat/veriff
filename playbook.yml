@@ -1,0 +1,39 @@
+- name: Configure EKS Cluster and Deploy Observability Stack
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install kubectl
+      apt:
+        name: kubectl
+        state: present
+
+    - name: Install helm
+      apt:
+        name: helm
+        state: present
+
+    - name: Configure kubectl for EKS
+      shell: |
+        aws eks --region us-east-1 update-kubeconfig --name veriff-observability-cluster
+
+    - name: Add Helm repositories
+      shell: |
+        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+        helm repo add grafana https://grafana.github.io/helm-charts
+        helm repo update
+
+    - name: Deploy Prometheus + Grafana
+      shell: |
+        helm install prometheus prometheus-community/kube-prometheus-stack
+
+    - name: Deploy Loki
+      shell: |
+        helm install loki grafana/loki
+
+    - name: Deploy Tempo
+      shell: |
+        helm install tempo grafana/tempo
+
+    - name: Deploy Sample Application
+      shell: |
+        kubectl apply -f https://raw.githubusercontent.com/veriff/deployment.yaml
