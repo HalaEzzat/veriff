@@ -2,13 +2,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "veriff-terraform-state-bucket"
-  force_destroy = true
-}
 
-resource "aws_s3_bucket_versioning" "versioning" {
-  bucket = aws_s3_bucket.terraform_state.id
+
+resource "aws_s3_bucket_versioning" "enabled" {
+  bucket = "veriff-terraform-state-bucket"
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -22,7 +20,6 @@ terraform {
     encrypt = true
   }
 }
-
 resource "aws_vpc" "eks_vpc" {
   cidr_block = "10.0.0.0/16"
 }
@@ -51,7 +48,10 @@ resource "aws_iam_role" "eks_role" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "eks.amazonaws.com"
+          Service = [
+            "eks.amazonaws.com",
+            "ec2.amazonaws.com"
+          ]
         }
       }
     ]

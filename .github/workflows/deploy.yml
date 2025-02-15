@@ -44,13 +44,15 @@ jobs:
 
       - name: Install Ansible
         run: sudo apt update && sudo apt install -y ansible
-      
+        env:
+          docker_user: ${{ secrets.DOCKER_HUB_USERNAME }}
+          
       - name: Run Docker Ansible Playbook
         run: ansible-playbook docker_playbook.yml
         env:
           docker_user: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker_pass: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          
+
       - name: Run Ansible Playbook
         run: ansible-playbook playbook.yml
 
