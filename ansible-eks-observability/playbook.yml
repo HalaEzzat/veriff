@@ -32,3 +32,7 @@
       shell: >
         helm upgrade --install grafana grafana/grafana --namespace monitoring 
         --set adminPassword='admin123'
+    
+    - name: Expose Grafana service
+      shell: kubectl port-forward svc/grafana 3000:80 -n monitoring
+    
