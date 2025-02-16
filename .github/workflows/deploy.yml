@@ -85,8 +85,7 @@ jobs:
         run: kubectl get pods -n monitoring
       
       - name: Deploy Sample Application
-        shell: |
-          kubectl apply -f deployment.yaml
+        run: kubectl apply -f deployment.yaml
 
   destroy:
     if: github.event.inputs.action == 'destroy'
