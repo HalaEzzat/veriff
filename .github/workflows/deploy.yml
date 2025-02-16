@@ -56,7 +56,7 @@ jobs:
       - name: Set up kubectl for EKS
         run: aws eks update-kubeconfig --region us-east-1 --name veriff-cluster
 
-      - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Prometheus)
+      - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Mimir)
         run: |
           helm repo add grafana https://grafana.github.io/helm-charts
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -74,9 +74,17 @@ jobs:
           # Deploy Tempo (Tracing)
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
-          # Deploy Prometheus (Metrics)
-          helm upgrade --install prometheus prometheus-community --namespace monitoring \
-            --set prometheus.service.type=LoadBalancer
+          # Deploy Mimir (Metrics)
+          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring \
+            --set "mimir.storage.backend=s3" \
+            --set "mimir.storage.s3.bucket_name=veriff-mimir" \
+            --set "mimir.storage.s3.endpoint=s3.amazonaws.com" \
+            --set "mimir.storage.s3.access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            --set "mimir.storage.s3.secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            --set "mimir.storage.s3.region=us-east-1"
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Verify Deployment
         run: kubectl get pods -n monitoring
