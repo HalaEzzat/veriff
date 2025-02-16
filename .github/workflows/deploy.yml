@@ -74,8 +74,7 @@ jobs:
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
           # Deploy Prometheus (Metrics)
-          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring
-
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 
       - name: Verify Deployment
         run: kubectl get pods -n monitoring
