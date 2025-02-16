@@ -56,11 +56,6 @@ jobs:
       - name: Set up kubectl for EKS
         run: aws eks update-kubeconfig --region us-east-1 --name veriff-cluster
 
-      - name: Install Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-          helm version  # Verify installation
-
       - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Mimir)
         run: |
           helm repo add grafana https://grafana.github.io/helm-charts
