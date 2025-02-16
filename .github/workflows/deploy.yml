@@ -56,11 +56,37 @@ jobs:
       - name: Set up kubectl for EKS
         run: aws eks update-kubeconfig --region us-east-1 --name veriff-cluster
 
-      - name: Install Ansible
-        run: sudo apt update && sudo apt install -y ansible
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          helm version  # Verify installation
 
-      - name: Run Ansible Playbook
-        run: ansible-playbook playbook.yml
+      - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Mimir)
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo update
+
+          # Deploy Loki (Logging)
+          helm upgrade --install loki grafana/loki-stack --namespace monitoring --create-namespace \
+            --set grafana.enabled=false --set promtail.enabled=true
+
+          # Deploy Grafana (Monitoring UI)
+          helm upgrade --install grafana grafana/grafana --namespace monitoring \
+            --set persistence.enabled=false --set service.type=LoadBalancer \
+            --set adminPassword=supersecurepassword
+
+          # Deploy Tempo (Tracing)
+          helm upgrade --install tempo grafana/tempo --namespace monitoring
+
+          # Deploy Mimir (Metrics)
+          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring
+
+      - name: Verify Deployment
+        run: kubectl get pods -n monitoring
+      
+      - name: Deploy Sample Application
+        shell: |
+          kubectl apply -f deployment.yaml
 
   destroy:
     if: github.event.inputs.action == 'destroy'

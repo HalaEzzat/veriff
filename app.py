@@ -1,24 +1,26 @@
-from flask import Flask
+from flask import Flask, request
 import logging
+import random
+import time
 
 app = Flask(__name__)
 
-# Setup logging
+# Logging setup
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 @app.route("/")
 def home():
-    logger.info("Home page accessed")
-    return "Hello, Veriff Observability!"
+    app.logger.info("Home page visited")
+    return "Hello, Kubernetes!"
 
-@app.route("/health")
-def health():
-    return "OK", 200
+@app.route("/metrics")
+def metrics():
+    return "request_count 1\nresponse_time " + str(random.uniform(0.1, 1.0))
 
-@app.route("/ready")
-def ready():
-    return "Ready", 200
+@app.route("/error")
+def error():
+    app.logger.error("Error encountered!")
+    return "Error occurred!", 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=5000)
