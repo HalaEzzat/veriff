@@ -56,9 +56,10 @@ jobs:
       - name: Set up kubectl for EKS
         run: aws eks update-kubeconfig --region us-east-1 --name veriff-cluster
 
-      - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Mimir)
+      - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Prometheus)
         run: |
           helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
 
           # Deploy Loki (Logging)
@@ -74,7 +75,8 @@ jobs:
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
           # Deploy Prometheus (Metrics)
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring \
+            --set prometheus.service.type=LoadBalancer
 
       - name: Verify Deployment
         run: kubectl get pods -n monitoring
