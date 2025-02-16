@@ -78,8 +78,9 @@ jobs:
           # Deploy Tempo (Tracing)
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
-          # Deploy Mimir (Metrics)
-          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring
+          # Deploy Prometheus (Metrics)
+          helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+
 
       - name: Verify Deployment
         run: kubectl get pods -n monitoring
