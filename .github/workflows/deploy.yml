@@ -74,7 +74,7 @@ jobs:
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
           # Deploy Prometheus (Metrics)
-          helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring
 
 
       - name: Verify Deployment
