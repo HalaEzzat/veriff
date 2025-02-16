@@ -2,7 +2,7 @@ from diagrams import Diagram, Cluster, Edge
 from diagrams.aws.compute import EKS, EC2
 from diagrams.aws.network import VPC
 from diagrams.aws.storage import S3
-from diagrams.aws.devtools import CodePipeline
+from diagrams.aws.devtools import Codepipeline
 from diagrams.aws.security import IAMRole
 from diagrams.onprem.ci import GithubActions
 from diagrams.onprem.config import Ansible
