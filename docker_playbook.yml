@@ -22,7 +22,7 @@
         enabled: yes
 
     - name: Log in to Docker Hub
-      command: docker login -u "{{ docker_user }}" -p "{{ docker_pass }}"
+      command: docker login -u "{{ docker_user }}" -p "{{ docker_password }}"
 
     - name: Build Docker Image
       command: docker build -t "{{ docker_user }}/my-app:latest" .
