@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: "hala.elhamahmy@gmail.com/my-app:latest"  # Replace with your actual image
+          image: "hala1994/my-app:latest"  # Replace with your actual image
           ports:
             - containerPort: 80
           env:
