@@ -2,18 +2,17 @@
 - name: Build and Push Docker Image
   hosts: localhost
   connection: local
+  vars:
+    docker_user: "{{ docker_user }}"  # Replace with your Docker Hub username
+    docker_password: "{{ docker_password }}"  # Replace with your Docker Hub password
+    image_name: "{{ docker_user }}/my-app:latest"
+
   tasks:
-
     - name: Ensure Docker is installed
-      command: docker --version
-      register: docker_check
-      ignore_errors: yes
-
-    - name: Install Docker if not present
-      shell: |
-        sudo apt update
-        sudo apt install -y docker.io
-      when: docker_check.rc != 0
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
 
     - name: Start Docker service
       service:
@@ -22,10 +21,19 @@
         enabled: yes
 
     - name: Log in to Docker Hub
-      command: docker login -u "{{ docker_user }}" -p "{{ docker_password }}"
+      community.docker.docker_login:
+        username: "{{ docker_user }}"
+        password: "{{ docker_password }}"
 
     - name: Build Docker Image
-      command: docker build -t "{{ docker_user }}/my-app:latest" .
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        build:
+          path: .
+        state: present
 
     - name: Push Docker Image to Docker Hub
-      command: docker push "{{ docker_user }}/my-app:latest"
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        push: yes
+        state: present
