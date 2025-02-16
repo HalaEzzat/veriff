@@ -75,7 +75,7 @@ jobs:
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
           # Deploy Prometheus (Metrics)
-          helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring \
+          helm upgrade --install prometheus prometheus-community --namespace monitoring \
             --set prometheus.service.type=LoadBalancer
 
       - name: Verify Deployment
