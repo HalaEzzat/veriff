@@ -14,11 +14,6 @@ grafana:
     datasources.yaml:
       apiVersion: 1
       datasources:
-        - name: Prometheus
-          type: prometheus
-          url: http://prometheus-kube-prometheus-prometheus.monitoring:9090
-          access: proxy
-          isDefault: true
         - name: Loki
           type: loki
           url: http://loki.monitoring:3100
