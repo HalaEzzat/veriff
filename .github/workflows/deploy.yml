@@ -80,10 +80,10 @@ jobs:
 
 
       - name: Verify Deployment
-        run: kubectl get pods -n monitoring
+        run: kubectl get pods 
       
       - name: Deploy Sample Application
-        run: kubectl apply -f deployment.yaml
+        run: kubectl apply -f app.yaml
 
   destroy:
     if: github.event.inputs.action == 'destroy'
