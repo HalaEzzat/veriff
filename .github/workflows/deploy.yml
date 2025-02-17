@@ -74,7 +74,7 @@ jobs:
           # Deploy Tempo (Tracing)
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
-          helm upgrade --install mimir grafana/mimir --namespace monitoring \
+          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring \
             --set "mimir.storage.backend=s3" \
             --set "mimir.storage.s3.bucket_name=veriff-mimir" \
             --set "mimir.storage.s3.endpoint=s3.amazonaws.com" \
