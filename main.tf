@@ -150,14 +150,12 @@ resource "aws_eks_node_group" "eks_nodes" {
     aws_subnet.eks_subnet_2.id
   ]
 
-  instance_types = ["t3.small"]
-
+  instance_types = ["t3.medium"]  # Upgrade to a larger instance type if needed
   scaling_config {
-    desired_size = 1
-    max_size     = 2
-    min_size     = 1
+    desired_size = 2  # Increase the number of nodes if needed
+    max_size     = 3
+    min_size     = 2
   }
-
   tags = {
     Name = "veriff-eks-node-group"
   }
