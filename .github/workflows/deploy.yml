@@ -59,7 +59,6 @@ jobs:
       - name: Deploy LGTM Stack (Loki, Grafana, Tempo, Mimir)
         run: |
           helm repo add grafana https://grafana.github.io/helm-charts
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
 
           # Deploy Loki (Logging)
@@ -75,15 +74,14 @@ jobs:
           helm upgrade --install tempo grafana/tempo --namespace monitoring
 
           helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring \
-            --set "minio.enabled=false" \  # Disable MinIO
-            --set "mimir.storage.backend=s3" \
-            --set "mimir.storage.s3.bucket_name=veriff-mimir" \
-            --set "mimir.storage.s3.endpoint=s3.amazonaws.com" \
-            --set "mimir.storage.s3.access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            --set "mimir.storage.s3.secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            --set "mimir.storage.s3.region=${{ secrets.AWS_REGION }}" \
-            --timeout 10m
-
+            --set minio.enabled=false \
+            --set mimir.storage.backend=s3 \
+            --set mimir.storage.s3.bucket_name=veriff-mimir \
+            --set mimir.storage.s3.endpoint=s3.amazonaws.com \
+            --set mimir.storage.s3.access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --set mimir.storage.s3.secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --set mimir.storage.s3.region=${{ secrets.AWS_REGION }} \
+            --timeout 15m
 
       - name: Verify Deployment
         run: kubectl get pods -n monitoring
