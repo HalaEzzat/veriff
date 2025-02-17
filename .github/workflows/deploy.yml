@@ -65,17 +65,10 @@ jobs:
           helm upgrade --install prom prometheus-community/kube-prometheus-stack \
             --values values.yaml
 
-          # Deploy Loki (Logging)
-          helm upgrade --install loki grafana/loki -f values.yaml
-
           # Deploy Grafana (Monitoring UI)
           helm upgrade --install grafana grafana/grafana \
             --set persistence.enabled=false --set service.type=LoadBalancer \
             --set adminPassword=supersecurepassword
-
-          # Deploy Tempo (Tracing)
-          helm upgrade --install tempo grafana/tempo \
-            --values values.yaml
 
 
 
