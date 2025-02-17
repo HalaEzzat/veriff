@@ -62,25 +62,19 @@ jobs:
           helm repo update
 
           # Deploy Loki (Logging)
-          helm upgrade --install loki grafana/loki-stack --namespace monitoring --create-namespace \
-            --set grafana.enabled=false --set promtail.enabled=true
+          helm --install loki grafana/loki-stack --namespace monitoring --create-namespace 
 
           # Deploy Grafana (Monitoring UI)
-          helm upgrade --install grafana grafana/grafana --namespace monitoring \
-            --set persistence.enabled=false --set service.type=LoadBalancer \
+          helm --install grafana grafana/grafana --namespace monitoring \
+            --set service.type=LoadBalancer \
             --set adminPassword=supersecurepassword
 
           # Deploy Tempo (Tracing)
-          helm upgrade --install tempo grafana/tempo --namespace monitoring
+          helm --install tempo grafana/tempo --namespace monitoring
 
-          helm upgrade --install mimir grafana/mimir-distributed --namespace monitoring \
-            --set minio.enabled=false \
-            --set mimir.storage.backend=s3 \
-            --set mimir.storage.s3.bucket_name=veriff-mimir \
-            --set mimir.storage.s3.endpoint=s3.amazonaws.com \
-            --set mimir.storage.s3.access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --set mimir.storage.s3.secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --set mimir.storage.s3.region=${{ secrets.AWS_REGION }} \
+          helm repo update
+
+          helm --install mimir grafana/mimir-distributed --namespace monitoring \
             --timeout 15m
 
       - name: Verify Deployment
