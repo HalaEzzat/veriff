@@ -67,7 +67,7 @@ jobs:
 
           # Deploy Loki (Logging)
           helm upgrade --install loki grafana/loki-stack \
-            --set promtail.enabled=true
+            --values values.yaml --set promtail.enabled=true
 
           # Deploy Grafana (Monitoring UI)
           helm upgrade --install grafana grafana/grafana \
@@ -75,7 +75,8 @@ jobs:
             --set adminPassword=supersecurepassword
 
           # Deploy Tempo (Tracing)
-          helm upgrade --install tempo grafana/tempo 
+          helm upgrade --install tempo grafana/tempo \
+            --values values.yaml
 
 
 
