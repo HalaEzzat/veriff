@@ -62,20 +62,20 @@ jobs:
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
 
-          helm install prom prometheus-community/kube-prometheus-stack \
+          helm upgrade --install prom prometheus-community/kube-prometheus-stack \
             --values values.yaml
 
           # Deploy Loki (Logging)
-          helm install loki grafana/loki-stack \
+          helm upgrade --install loki grafana/loki-stack \
             --set promtail.enabled=true
 
           # Deploy Grafana (Monitoring UI)
-          helm install grafana grafana/grafana \
+          helm upgrade --install grafana grafana/grafana \
             --set persistence.enabled=false --set service.type=LoadBalancer \
             --set adminPassword=supersecurepassword
 
           # Deploy Tempo (Tracing)
-          helm install tempo grafana/tempo 
+          helm upgrade --install tempo grafana/tempo 
 
 
 
