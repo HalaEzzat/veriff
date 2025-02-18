@@ -40,25 +40,25 @@ My solution:
 ------------------------------------------------------------------
 ## Steps to run the solution:
 
-1- create s3 bucket for state file and github actions using command:
+1. create s3 bucket for state file and github actions using command:
 ```sh
 aws s3api create-bucket --bucket veriff-terraform-state-bucket --region us-east-1 
 ```
-2- Create AWS key and Datadog free account using your Google account and then create API and APP keys 
-3- Add your secrets to github actions replacing `AWS_ACCESS_KEY_ID` , `AWS_REGION`, `AWS_SECRET_ACCESS_KEY`, `DATADOG_API_KEY` , `DATADOG_APP_KEY`
-4- Click on the `Actions` tab then choose our CICD pipeline: `Manage EKS Infrastructure` from the side menue . then choose `deply` from the drop down menue.
-5- Check the cluster for all pods to be `running`
-6- Run the following command to access our app:
+2. Create AWS key and Datadog free account using your Google account and then create API and APP keys 
+3. Add your secrets to github actions replacing `AWS_ACCESS_KEY_ID` , `AWS_REGION`, `AWS_SECRET_ACCESS_KEY`, `DATADOG_API_KEY` , `DATADOG_APP_KEY`
+4. Click on the `Actions` tab then choose our CICD pipeline: `Manage EKS Infrastructure` from the side menue . then choose `deply` from the drop down menue.
+5. Check the cluster for all pods to be `running`
+6. Run the following command to access our app:
 ```sh
 kubectl get svc frontend
 ```
-7- Run the following command to access grafana:
+7. Run the following command to access grafana:
 ```sh
 kubectl get svc grafana
 ```
 Username*: `admin`
 Password*: `supersecurepassword`
-8- Add Promethues as a Datasource:
+8. Add Promethues as a Datasource:
 URL*: `http://prom-kube-prometheus-stack-prometheus:9090`
 - Import Prometheus Dashboards
 - Go to Dashboards > Manage.
@@ -74,7 +74,7 @@ URL*: `http://prom-kube-prometheus-stack-prometheus:9090`
 
 ### Promethues + Grafana:
 
-APM (This is my app):
+APM (This is my app I implemented from this repo: https://github.com/HalaEzzat/GBFSApp ):
 ![image](https://github.com/user-attachments/assets/65d5e84d-f3f8-4070-ab81-dd6ad938a7d0)
 
 K8s (Demo App) :
