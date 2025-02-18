@@ -2,7 +2,7 @@
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
-
+*.PNG
 # Environment files
 *.tfvars
 *.tfvars.json

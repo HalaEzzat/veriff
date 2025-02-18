@@ -1,0 +1,13 @@
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    scrapeTimeout: "90s"
+    scrapeInterval: "90s"
+
+grafana:
+  sidecar:
+    datasources:
+      defaultDatasourceEnabled: true
+
