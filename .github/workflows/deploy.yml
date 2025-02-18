@@ -64,6 +64,20 @@ jobs:
           helm repo update
           helm upgrade --install datadog-agent datadog/datadog -f values.yaml
 
+      - name: Deploy Grafana and promethues
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+          
+          helm upgrade --install prom prometheus-community/kube-prometheus-stack \
+            --values grafana-values.yaml
+
+          # Deploy Grafana (Monitoring UI)
+          helm upgrade --install grafana grafana/grafana \
+            --set persistence.enabled=false --set service.type=LoadBalancer \
+            --set adminPassword=supersecurepassword
+
   destroy:
     if: github.event.inputs.action == 'destroy'
     runs-on: ubuntu-latest
