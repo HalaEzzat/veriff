@@ -107,8 +107,8 @@ Logs:
 
 Monitors and Alerts:
 
-![image](https://github.com/user-attachments/assets/d2a2f27e-7a0c-4f32-ac6f-1cd7847008b0)
-![image](https://github.com/user-attachments/assets/5cbbe00b-1db8-404d-9293-1aa880c3d70a)
+![image](https://github.com/user-attachments/assets/b7e59ffd-0128-4d3b-b3ab-a5cad2f4888a)
+![image](https://github.com/user-attachments/assets/8c910cfd-6bca-4572-bf10-4912ab4c472c)
 
 
 
