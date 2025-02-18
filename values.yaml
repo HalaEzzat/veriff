@@ -9,9 +9,7 @@ datadog:
 
   apm:
     enabled: true  # Enable APM tracing
-    port: 8126  # Default APM port for Datadog
-    env: "production"
-    service: "ecommerce-app"
+  
 
   processAgent:
     enabled: true  # Enable process monitoring
@@ -22,19 +20,6 @@ datadog:
 
   containers:
     runAsRoot: true  # Required if logs collection fails due to permissions
-
-  podAnnotations:
-    ad.datadoghq.com/frontend.logs: '[{"source":"nginx","service":"ecommerce-frontend"}]'
-    ad.datadoghq.com/catalogue.logs: '[{"source":"java","service":"ecommerce-catalogue"}]'
-    ad.datadoghq.com/orders.logs: '[{"source":"python","service":"ecommerce-orders"}]'
-    ad.datadoghq.com/frontend.apm: '[{"enabled":true}]'
-    ad.datadoghq.com/catalogue.apm: '[{"enabled":true}]'
-    ad.datadoghq.com/orders.apm: '[{"enabled":true}]'
-
-agents:
-  tolerations:
-    - key: "node-role.kubernetes.io/master"
-      effect: "NoSchedule"
 
 clusterChecks:
   enabled: true  # Enable cluster checks

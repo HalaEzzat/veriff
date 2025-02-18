@@ -99,6 +99,9 @@ resource "aws_eks_cluster" "eks" {
   name     = "veriff-cluster"
   role_arn = aws_iam_role.eks_role.arn
 
+ # Enable logging for the EKS cluster
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
   vpc_config {
     subnet_ids = [
       aws_subnet.eks_subnet_1.id,
