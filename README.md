@@ -58,6 +58,7 @@ kubectl get svc grafana
 ```
 Username*: `admin`
 Password*: `supersecurepassword`
+
 8. Add Promethues as a Datasource:
 URL*: `http://prom-kube-prometheus-stack-prometheus:9090`
 - Import Prometheus Dashboards
